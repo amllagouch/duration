@@ -16,8 +16,6 @@ H_PER_DAY = 24
 location = "."
 FILE = args.file
 cwd = os.getcwd()
-path=cwd+"/"+FILE
-print(f"{path=}")
 files_in_dir=[]
 
 if args.hours is not None:
@@ -27,6 +25,8 @@ if args.directory is not None:
     location = args.directory
 
 if FILE is not None:
+    path=cwd+"/"+FILE
+    print(f"{path=}")
     with open(path,'r') as f:
        line = f.readline().rstrip()
        cnt = 1
