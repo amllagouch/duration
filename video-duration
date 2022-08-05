@@ -9,17 +9,39 @@ import sec_to_time as sf
 parser = argparse.ArgumentParser()
 parser.add_argument("-d", "--directory", type=str, help = "directory containing video files")
 parser.add_argument("-H", "--hours", type=int, help = "watch hours per each day")
+parser.add_argument("-f", "--file", type=str, help = "provide the list of video files as a text file")
 args = parser.parse_args()
 
-H_PER_DAY = args.hours
-location = args.directory
-print(f'location : {location}')
+H_PER_DAY = 24
+location = "."
+FILE = args.file
+cwd = os.getcwd()
+path=cwd+"/"+FILE
+print(f"{path=}")
+files_in_dir=[]
 
-files_in_dir = []
-for r, d, f in tqdm(os.walk(location), desc = 'walking files ... '):
-   for item in f:
-      if (item.endswith('.mkv') or item.endswith('.mp4') or item.endswith('.webm')):
-         files_in_dir.append(os.path.join(r, item))
+if args.hours is not None:
+    H_PER_DAY = args.hours
+
+if args.directory is not None:
+    location = args.directory
+
+if FILE is not None:
+    with open(path,'r') as f:
+       line = f.readline().rstrip()
+       cnt = 1
+       while line:
+           files_in_dir.append(line)
+           line = f.readline().rstrip()
+           cnt += 1
+else:
+    print(f'location : {location}')
+    files_in_dir = []
+    for r, d, f in tqdm(os.walk(location), desc = 'walking files ... '):
+       for item in f:
+          if (item.endswith('.mkv') or item.endswith('.mp4') or item.endswith('.webm')):
+             files_in_dir.append(os.path.join(r, item))
+
 print(f'number of video files : {len(files_in_dir)}')
 
 def get_length(filename):
@@ -37,7 +59,7 @@ for item in tqdm(files_in_dir, desc = 'calculate durations ... '):
     duration = get_length(item)
     duration_list.append(duration)
 
-total_duration = sum(duration_list) 
+total_duration = sum(duration_list)
 total_duration = int(total_duration)
 duration = sf.sec_to_time_format(total_duration, hours_per_day = H_PER_DAY)
 
